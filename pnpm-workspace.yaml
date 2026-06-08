@@ -1,0 +1,13 @@
+packages:
+  - "packages/*"
+
+# pnpm 11 reads build-script allowlists here (no longer from package.json's "pnpm" field)
+allowBuilds:
+  esbuild: true # required by tsx (seed/migrations)
+  sharp: false # ships prebuilt binaries; source build needs node-gyp and isn't required
+  "@scarf/scarf": false # telemetry, no build needed
+  "@tree-sitter-grammars/tree-sitter-yaml": false
+  core-js-pure: false
+  tree-sitter: false
+  tree-sitter-json: false
+  core-js: set this to true or false

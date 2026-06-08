@@ -1,0 +1,23 @@
+{
+  "name": "book-manager",
+  "private": true,
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "db:start": "docker compose up -d",
+    "db:stop": "docker compose down",
+    "setup": "test -f packages/database/.env || cp packages/database/.env.example packages/database/.env && test -f packages/web/.env || cp packages/web/.env.example packages/web/.env && pnpm install && pnpm run db:start && pnpm --filter @book-manager/database db:push && pnpm --filter @book-manager/database seed",
+    "dev": "pnpm --filter @book-manager/web dev",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "clean": "docker compose down && rm -rf node_modules packages/*/node_modules packages/*/.next packages/*/dist packages/*/.turbo"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.16"
+  },
+  "dependencies": {
+    "pnpm": "^11.5.2",
+    "react": "19.2.7"
+  }
+}
