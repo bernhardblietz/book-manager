@@ -8,7 +8,7 @@ export const authors = pgTable("authors", {
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  authorId: integer().references(() => authors.id),
+  authorId: integer().references(() => authors.id).notNull(),
   isbn: text("isbn").unique(),
   year: integer("year")
 });

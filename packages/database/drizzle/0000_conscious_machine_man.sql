@@ -6,7 +6,7 @@ CREATE TABLE "authors" (
 CREATE TABLE "books" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
-	"authorId" integer,
+	"authorId" integer NOT NULL,
 	"isbn" text,
 	"year" integer,
 	CONSTRAINT "books_isbn_unique" UNIQUE("isbn")
