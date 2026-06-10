@@ -11,8 +11,14 @@ export default function BooksPage() {
   const [books, setBooks] = useState<Book[]>([
     {title: "Erich und die Detektive", authorId: 1, isbn: "978-8723901576", year: 2006},
     {title: "Der Herr der Diebe", authorId: 2, isbn: "978-3791504575", year: 2000},
-    {title: "Die Räuber", authorId: 3, isbn:"978-3126667807", year: 1782}])
-  const [authors, setAuthors] = useState<Author[]>([{name: "Erich Käster", id: 1},{name: "Cornelia Funke", id: 2},{name: "Friedrich Schiller", id: 3}])
+    {title: "Die Räuber", authorId: 3, isbn:"978-3126667807", year: 1782}
+  ])
+
+  const [authors, setAuthors] = useState<Author[]>([
+    {name: "Erich Käster", id: 1},
+    {name: "Cornelia Funke", id: 2},
+    {name: "Friedrich Schiller", id: 3}
+  ])
 
   return (
     <div>
