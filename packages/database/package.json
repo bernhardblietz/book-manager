@@ -13,8 +13,8 @@
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "studio": "drizzle-kit studio",
-    "seed": "tsx seed.ts",
-    "db:push": "drizzle-kit push"
+    "check": "drizzle-kit check",
+    "seed": "tsx seed.ts"
   },
   "dependencies": {
     "dotenv": "17.4.2",
