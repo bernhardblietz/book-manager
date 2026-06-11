@@ -1,24 +1,55 @@
 "use client";
 
 import BookForm from "@/components/BookForm";
-import { Book } from "@/model/book"
 import { Author } from "@/model/author"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookList from "@/components/BookList";
+import { BookWithAuthor } from "@/model/book";
+import { NewBook } from "@book-manager/database";
+
+async function fetchBooksWithAuthors(): Promise<BookWithAuthor[]> {
+  return await fetch("http://localhost:3000/api/books").then(res => res.json())
+}
+
+async function fetchAuthors(): Promise<Author[]> {
+  return await fetch("http://localhost:3000/api/authors").then(res => res.json())
+}
 
 export default function BooksPage() {
 
-  const [books, setBooks] = useState<Book[]>([
-    {title: "Erich und die Detektive", authorId: 1, isbn: "978-8723901576", year: 2006},
-    {title: "Der Herr der Diebe", authorId: 2, isbn: "978-3791504575", year: 2000},
-    {title: "Die Räuber", authorId: 3, isbn:"978-3126667807", year: 1782}
-  ])
+  const [booksWithAuthors, setBooksWithAuthors] = useState<BookWithAuthor[]>([])
+  const [authors, setAuthors] = useState<Author[]>([])
+  const [updatesAvailable, setUpdatesAvailable] = useState<Boolean>(false)
 
-  const [authors, setAuthors] = useState<Author[]>([
-    {name: "Erich Käster", id: 1},
-    {name: "Cornelia Funke", id: 2},
-    {name: "Friedrich Schiller", id: 3}
-  ])
+  useEffect(() => {
+    async function loadAuthors() {
+      setAuthors([]);
+      const authors = await fetchAuthors();
+      setAuthors(authors);
+    }
+
+    async function loadBooksWithAuthors() {
+      setBooksWithAuthors([]);
+      const books = await fetchBooksWithAuthors();
+      setBooksWithAuthors(books);
+    }
+
+    loadAuthors();
+    loadBooksWithAuthors();
+    return () => {
+      setUpdatesAvailable(false)
+    }
+  }, [updatesAvailable]);
+
+  function submitBook(book: NewBook) {
+    fetch('http://localhost:3000/api/books', { method: 'POST', body: JSON.stringify(book) })
+    .then(res => { if(res.status === 201) setUpdatesAvailable(true) })
+  }
+  
+  function deleteBook(id: number) {
+    fetch('http://localhost:3000/api/books/' + id, { method: 'DELETE'})
+    .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
+  }
 
   return (
     <div>
@@ -26,13 +57,12 @@ export default function BooksPage() {
       <p>Diese Seite wird von dir implementiert. Viel Erfolg!</p>
       <div className="grid grid-cols-2 gap-8">
         <BookList
-          books={books}
-          authors={authors}
-          onDelete={(title: string, authorId: number) => setBooks(books.filter((book) => book.title !== title || book.authorId !== authorId))}          
+          booksWithAuthors={booksWithAuthors}
+          onDelete={(id: number) => deleteBook(id)}
         />
         <BookForm
           authors={authors}
-          onSubmit={(book) => setBooks([...books, book])}
+          onSubmit={(book: NewBook) => submitBook(book)}
         />
       </div>
     </div>

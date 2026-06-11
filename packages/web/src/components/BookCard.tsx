@@ -9,7 +9,7 @@ type BookCardProps = {
     onDelete: Function
 }
 
-export default function BookCard({ book, author, onDelete = (title: string, authorId: number) => {}}: BookCardProps ){
+export default function BookCard({ book, author, onDelete }: BookCardProps ){
     return (
         <Card className="flex flex-row justify-between">
             <div className="py-1 px-2 grid grid-cols-2 w-full">
@@ -23,7 +23,7 @@ export default function BookCard({ book, author, onDelete = (title: string, auth
                 </div>
             </div>
             <IconButton
-                onClick={() => onDelete(book.title, author.id)}
+                onClick={() => onDelete(book.id)}
             >
                 <DeleteIcon/>
             </IconButton>

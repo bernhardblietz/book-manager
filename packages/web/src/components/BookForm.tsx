@@ -4,11 +4,12 @@ import Input from "./ui/Input"
 import Select from "./ui/Select"
 import { Book } from "@/model/book"
 import { Author } from '@/model/author'
+import { NewBook } from "@book-manager/database"
 
 type BookFormProps = {
     initialValues?: Book | undefined
     authors: Author[]
-    onSubmit: (values: Book) => void
+    onSubmit: (values: NewBook) => void
     submitLabel?: string
 }
 
@@ -19,9 +20,9 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
     const [year, setYear] = React.useState(initialValues?.year || "")
 
     function submitBook(){
-        const bookYear = typeof year === "number" ? year : undefined
-        const book: Book = { title, authorId, isbn, year: bookYear }
-        onSubmit(book)
+        const newBook: NewBook = { title, authorId, isbn: isbn ? isbn : undefined, year: typeof year === "number" ? year : undefined }
+        console.log(newBook)
+        onSubmit(newBook)
         setTitle(initialValues?.title ?? "")
         setAuthorId(initialValues?.authorId ?? -1)
         setIsbn(initialValues?.isbn ?? "")
@@ -47,5 +48,3 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
         </>
     )
 }
-
-// Felder: Titel (Pflicht), Autor-Dropdown, ISBN (optional), Jahr (optional)

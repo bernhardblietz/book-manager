@@ -1,21 +1,19 @@
-import { Book } from "@/model/book"
-import { Author } from '@/model/author'
+import { BookWithAuthor } from "@/model/book"
 import BookCard from "./BookCard"
 
 type BookListProps = {
-    books: Book[],
-    authors: Author[]
+    booksWithAuthors: BookWithAuthor[]
     onDelete: Function
 }
 
-export default function BookList({ books, authors, onDelete }: BookListProps) {
+export default function BookList({ booksWithAuthors, onDelete }: BookListProps) {
     return(
         <div className="flex flex-col gap-2">
-             {books.map((book) => (
-                    <div key={book.title + book.authorId}>
+             {booksWithAuthors.map((bookWithAuthor) => (
+                    <div key={bookWithAuthor.books.id}>
                         <BookCard
-                            book={book}
-                            author={authors.find(author => author.id === book.authorId) ?? {id: -1, name: "Unbekannt"}}
+                            book={bookWithAuthor.books}
+                            author={bookWithAuthor.authors}
                             onDelete={onDelete}
                         />
                     </div>
