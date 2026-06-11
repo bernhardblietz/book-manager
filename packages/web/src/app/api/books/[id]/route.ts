@@ -1,6 +1,8 @@
 import { authors, Book, books, db, NewBook } from "@book-manager/database";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { BookSchema } from "@/model/book"
+import z from "zod";
 
 export async function GET(_req: NextRequest, ctx: RouteContext<"/api/books/[id]">) {
   const { id } = await ctx.params;
@@ -26,9 +28,16 @@ export async function DELETE(_req: NextRequest, ctx: RouteContext<"/api/books/[i
 
 export async function PUT(request: NextRequest, ctx: RouteContext<"/api/books/[id]">) {
   const { id } = await ctx.params;
-  const {title, authorId, isbn, year}: NewBook = await request.json();
+  const json = await request.json();
+  const result = BookSchema.safeParse(json);
+  
+  if (!result.success){
+    return NextResponse.json(z.treeifyError(result.error), {status: 400});
+  }
+  
+  const book = result.data
   try {
-    const res = await db.update(books).set({title, authorId, isbn, year}).where(eq(books.id, Number(id))).returning();
+    const res = await db.update(books).set(book).where(eq(books.id, Number(id))).returning();
     if (res.length < 1) return NextResponse.json({ error: "No book with id " + id + " found" }, { status: 404 })
     return NextResponse.json({updated: res});
   } catch {
