@@ -20,7 +20,7 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
     const [year, setYear] = React.useState(initialValues?.year || "")
 
     function submitBook(){
-        const newBook: NewBook = { title, authorId, isbn: isbn ? isbn : undefined, year: typeof year === "number" ? year : undefined }
+        const newBook: NewBook = { title, authorId, isbn: isbn ? isbn : "", year: typeof year === "number" ? year : undefined }
         onSubmit(newBook)
         setTitle(initialValues?.title ?? "")
         setAuthorId(initialValues?.authorId ?? -1)
