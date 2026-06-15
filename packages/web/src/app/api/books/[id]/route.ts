@@ -1,8 +1,14 @@
 import { authors, Book, books, db, NewBook } from "@book-manager/database";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { BookSchema } from "@/model/book"
 import z from "zod";
+
+const BookPutSchema = z.object({
+  title: z.string().min(1).optional(),
+  authorId: z.int().positive().optional(),
+  isbn: z.string().optional(),
+  year: z.int().optional(),
+})
 
 export async function GET(_req: NextRequest, ctx: RouteContext<"/api/books/[id]">) {
   const { id } = await ctx.params;
@@ -29,7 +35,7 @@ export async function DELETE(_req: NextRequest, ctx: RouteContext<"/api/books/[i
 export async function PUT(request: NextRequest, ctx: RouteContext<"/api/books/[id]">) {
   const { id } = await ctx.params;
   const json = await request.json();
-  const result = BookSchema.safeParse(json);
+  const result = BookPutSchema.safeParse(json);
   
   if (!result.success){
     return NextResponse.json(z.treeifyError(result.error), {status: 400});

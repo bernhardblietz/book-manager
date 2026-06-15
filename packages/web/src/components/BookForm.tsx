@@ -21,7 +21,6 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
 
     function submitBook(){
         const newBook: NewBook = { title, authorId, isbn: isbn ? isbn : undefined, year: typeof year === "number" ? year : undefined }
-        console.log(newBook)
         onSubmit(newBook)
         setTitle(initialValues?.title ?? "")
         setAuthorId(initialValues?.authorId ?? -1)

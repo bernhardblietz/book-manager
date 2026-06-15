@@ -1,8 +1,14 @@
 import { authors, books, db } from "@book-manager/database";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { BookSchema } from "@/model/book"
 import z from "zod";
+
+export const BookPostSchema = z.object({
+  title: z.string().min(1),
+  authorId: z.int().positive(),
+  isbn: z.string().optional(),
+  year: z.int().optional(),
+})
 
 export async function GET() {
   try {
@@ -15,7 +21,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const json = await request.json();
-  const result = BookSchema.safeParse(json);
+  const result = BookPostSchema.safeParse(json);
   
   if (!result.success){
     return NextResponse.json(z.treeifyError(result.error), {status: 400});
