@@ -51,14 +51,21 @@ export default function BooksPage() {
     .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
   }
 
+  function saveBook(id: number, book: NewBook) {
+    fetch('http://localhost:3000/api/books/' + id, { method: 'PUT', body: JSON.stringify(book) })
+    .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
+  }
+
   return (
     <div>
       <h1>Bücher</h1>
       <p>Diese Seite wird von dir implementiert. Viel Erfolg!</p>
-      <div className="grid grid-cols-2 gap-8">
+      <div className="flex flex-row justify-between gap-8">
         <BookList
           booksWithAuthors={booksWithAuthors}
+          authors={authors}
           onDelete={(id: number) => deleteBook(id)}
+          onSave={(id: number, newBook: NewBook) => saveBook(id, newBook)}
         />
         <BookForm
           authors={authors}
