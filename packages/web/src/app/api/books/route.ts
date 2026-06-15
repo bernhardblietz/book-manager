@@ -1,5 +1,5 @@
 import { authors, books, db } from "@book-manager/database";
-import { eq } from "drizzle-orm";
+import { eq, ilike, asc, SQL, and, count, getTableColumns } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
@@ -10,10 +10,45 @@ export const BookPostSchema = z.object({
   year: z.int().optional(),
 })
 
-export async function GET() {
+export const QuerySchema = z.object({
+  pageNumber: z.coerce.number().min(1).default(1),
+  pageSize: z.coerce.number().min(1).max(100).default(20),
+  authorId: z.coerce.number().min(1).optional(),
+  queryText: z.string().optional(),
+})
+
+export async function GET(request: NextRequest) {
+
+  const params = request.nextUrl.searchParams
+
+  const queryRaw = { 
+    queryText: params.get("q") ?? undefined, 
+    authorId: params.get("authorId") ?? undefined, 
+    pageNumber: params.get("page") ?? undefined, 
+    pageSize: params.get("pageSize") ?? undefined
+  }
+
+  const result = QuerySchema.safeParse(queryRaw)
+
+  if (!result.success){
+      return NextResponse.json(z.treeifyError(result.error), {status: 400});
+  }
+
+  const query = result.data
+  const filters: SQL[] = [];
+
+  if (query.queryText) filters.push(ilike(books.title, query.queryText));
+  if (query.authorId) filters.push(eq(books.authorId, query.authorId));
+
   try {
-    const res = await db.select().from(books).innerJoin(authors, eq(books.authorId, authors.id))
-    return NextResponse.json(res);
+    const data = await db.select().from(books)
+    .where(and(...filters))
+    .innerJoin(authors, eq(books.authorId, authors.id))
+    .orderBy(asc(books.id))
+    .limit(query.pageSize)
+    .offset((query.pageNumber-1) * query.pageSize)
+    const total = await db.select({ count: count() }).from(books).where(and(...filters))
+    return NextResponse.json({ data, page: query.pageNumber, pageSize: query.pageSize, total: total[0].count });
   } catch {
     return NextResponse.json({ error: "An unexpected error occured while trying to fetch books" }, { status: 500 });
   }

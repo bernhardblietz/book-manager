@@ -4,11 +4,20 @@ import BookForm from "@/components/BookForm";
 import { Author } from "@/model/author"
 import { useEffect, useState } from "react";
 import BookList from "@/components/BookList";
-import { BookWithAuthor } from "@/model/book";
+import { BookResponse, BookWithAuthor, Query } from "@/model/book";
 import { NewBook } from "@book-manager/database";
+import QueryForm from "@/components/QueryForm";
+import Pagination from "@mui/material/Pagination";
 
-async function fetchBooksWithAuthors(): Promise<BookWithAuthor[]> {
-  return await fetch("http://localhost:3000/api/books").then(res => res.json())
+async function fetchBooks(query: Query): Promise<BookResponse> {
+  const params = new URLSearchParams();
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      params.append(key, String(value));
+    }
+  });
+  const url = `http://localhost:3000/api/books?${params.toString()}`;
+  return await fetch(url).then(res => res.json())
 }
 
 async function fetchAuthors(): Promise<Author[]> {
@@ -20,6 +29,8 @@ export default function BooksPage() {
   const [booksWithAuthors, setBooksWithAuthors] = useState<BookWithAuthor[]>([])
   const [authors, setAuthors] = useState<Author[]>([])
   const [updatesAvailable, setUpdatesAvailable] = useState<Boolean>(false)
+  const [query, setQuery] = useState<Query>({})
+  const [pages, setPages] = useState<number>(0)
 
   useEffect(() => {
     async function loadAuthors() {
@@ -28,18 +39,19 @@ export default function BooksPage() {
       setAuthors(authors);
     }
 
-    async function loadBooksWithAuthors() {
+    async function loadBooks(query: Query) {
       setBooksWithAuthors([]);
-      const books = await fetchBooksWithAuthors();
-      setBooksWithAuthors(books);
+      const response = await fetchBooks(query);
+      setBooksWithAuthors(response.data);
+      setPages(Math.ceil(response.total / response.pageSize));
     }
 
     loadAuthors();
-    loadBooksWithAuthors();
+    loadBooks(query);
     return () => {
       setUpdatesAvailable(false)
     }
-  }, [updatesAvailable]);
+  }, [updatesAvailable, query]);
 
   function submitBook(book: NewBook) {
     fetch('http://localhost:3000/api/books', { method: 'POST', body: JSON.stringify(book) })
@@ -60,7 +72,12 @@ export default function BooksPage() {
     <div>
       <h1>Bücher</h1>
       <p>Diese Seite wird von dir implementiert. Viel Erfolg!</p>
-      <div className="flex flex-row justify-between gap-8">
+      <div className="flex flex-row gap-8">
+        <QueryForm
+          initialValues={{page: 1, pageSize: 20}}
+          onSubmit={(query) => setQuery(query)}
+          authors={authors}
+        />
         <BookList
           booksWithAuthors={booksWithAuthors}
           authors={authors}
@@ -71,6 +88,9 @@ export default function BooksPage() {
           authors={authors}
           onSubmit={(book: NewBook) => submitBook(book)}
         />
+      </div>
+      <div className="flex flex-row justify-center">
+        <Pagination count={pages} onChange={(e, index) => setQuery({authorId: query.authorId, page: index, pageSize: query.pageSize, q: query.q})}/>
       </div>
     </div>
   );

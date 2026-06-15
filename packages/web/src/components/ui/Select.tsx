@@ -4,10 +4,11 @@ type SelectProps = {
     value: string | number;
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     options: { value: string | number; label: string }[];
+    emptyText: string;
     required?: boolean;
 }
 
-export default function Select({ label, name, value, onChange, options, required = false }: SelectProps) {
+export default function Select({ label, name, value, onChange, options, emptyText, required = false }: SelectProps) {
     return (
         <div>
             <label htmlFor={name} className="block text-sm font-medium text-gray-700">
@@ -21,7 +22,7 @@ export default function Select({ label, name, value, onChange, options, required
                 required={required}
                 className="block w-full border rounded-md shadow-sm"
             >
-                <option value="">Bitte auswählen</option>
+                <option value="">{emptyText}</option>
                 {options.map((option) => (
                     <option key={option.value} value={option.value}>
                         {option.label}

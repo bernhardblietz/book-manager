@@ -38,6 +38,7 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
                     value={authorId}
                     onChange={(e) => setAuthorId(Number(e.target.value))}
                     options={authors.map((author) => ({ value: author.id, label: author.name }))}
+                    emptyText="Bitte wählen"
                     required
                 />
                 <Input label="ISBN" name="isbn" type="text" value={isbn} onChange={(e) => setIsbn(e.target.value)} />

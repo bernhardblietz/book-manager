@@ -13,3 +13,17 @@ export type BookWithAuthor = {
   books: Book,
   authors: Author
 }
+
+export type BookResponse = {
+  data: BookWithAuthor[]
+  page: number
+  pageSize: number
+  total: number
+}
+
+export type Query = {
+  page?: number
+  pageSize?: number
+  authorId?: number
+  q?: string
+}
