@@ -7,7 +7,7 @@ import { Author } from '@/model/author'
 import { NewBook } from "@book-manager/database"
 
 type BookFormProps = {
-    initialValues?: Book | undefined
+    initialValues?: NewBook | undefined
     authors: Author[]
     onSubmit: (values: NewBook) => void
     submitLabel?: string

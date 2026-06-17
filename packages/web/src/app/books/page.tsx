@@ -8,6 +8,7 @@ import { BookResponse, BookWithAuthor, Query } from "@/model/book";
 import { NewBook } from "@book-manager/database";
 import QueryForm from "@/components/QueryForm";
 import Pagination from "@mui/material/Pagination";
+import { Typography } from "@mui/material";
 
 async function fetchBooks(query: Query): Promise<BookResponse> {
   const params = new URLSearchParams();
@@ -71,27 +72,33 @@ export default function BooksPage() {
   return (
     <div>
       <h1>Bücher</h1>
-      <p>Diese Seite wird von dir implementiert. Viel Erfolg!</p>
       <div className="flex flex-row gap-8">
         <QueryForm
           initialValues={{page: 1, pageSize: 20}}
           onSubmit={(query) => setQuery(query)}
           authors={authors}
         />
+        {booksWithAuthors.length > 0 &&
         <BookList
           booksWithAuthors={booksWithAuthors}
           authors={authors}
           onDelete={(id: number) => deleteBook(id)}
           onSave={(id: number, newBook: NewBook) => saveBook(id, newBook)}
-        />
-        <BookForm
-          authors={authors}
-          onSubmit={(book: NewBook) => submitBook(book)}
-        />
+        /> ||
+         <Typography className="w-full text-center">Keine Bücher gefunden.</Typography>
+         }
+        <div data-testid="SubmitForm">
+          <BookForm
+            authors={authors}
+            onSubmit={(book: NewBook) => submitBook(book)}
+          />
+        </div>
       </div>
-      <div className="flex flex-row justify-center">
-        <Pagination count={pages} onChange={(e, index) => setQuery({authorId: query.authorId, page: index, pageSize: query.pageSize, q: query.q})}/>
-      </div>
+      {booksWithAuthors.length > 0 &&
+        <div className="flex flex-row justify-center">
+          <Pagination count={pages} onChange={(e, index) => setQuery({authorId: query.authorId, page: index, pageSize: query.pageSize, q: query.q})}/>
+        </div>
+      }
     </div>
   );
 }
