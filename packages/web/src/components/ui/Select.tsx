@@ -6,9 +6,10 @@ type SelectProps = {
     options: { value: string | number; label: string }[];
     emptyText: string;
     required?: boolean;
+    error?: string;
 }
 
-export default function Select({ label, name, value, onChange, options, emptyText, required = false }: SelectProps) {
+export default function Select({ label, name, value, onChange, options, emptyText, required = false, error }: SelectProps) {
     return (
         <div>
             <label htmlFor={name} className="block text-sm font-medium text-gray-700">
@@ -29,6 +30,7 @@ export default function Select({ label, name, value, onChange, options, emptyTex
                     </option>
                 ))}
             </select>
+            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
     )
 }

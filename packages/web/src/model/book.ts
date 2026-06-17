@@ -9,6 +9,14 @@ export type Book = {
     year?: number;
 }
 
+export type PartialBook = {
+  id?: number;
+  title?: string;
+  authorId?: number;
+  isbn?: string;
+  year?: number;
+}
+
 export type BookWithAuthor = {
   books: Book,
   authors: Author

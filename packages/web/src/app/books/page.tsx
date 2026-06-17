@@ -4,11 +4,12 @@ import BookForm from "@/components/BookForm";
 import { Author } from "@/model/author"
 import { useEffect, useState } from "react";
 import BookList from "@/components/BookList";
-import { BookResponse, BookWithAuthor, Query } from "@/model/book";
+import { BookResponse, BookWithAuthor, PartialBook, Query } from "@/model/book";
 import { NewBook } from "@book-manager/database";
 import QueryForm from "@/components/QueryForm";
 import Pagination from "@mui/material/Pagination";
 import { Typography } from "@mui/material";
+import { FormError } from "@/model/form";
 
 async function fetchBooks(query: Query): Promise<BookResponse> {
   const params = new URLSearchParams();
@@ -53,10 +54,16 @@ export default function BooksPage() {
       setUpdatesAvailable(false)
     }
   }, [updatesAvailable, query]);
+  
 
-  function submitBook(book: NewBook) {
-    fetch('http://localhost:3000/api/books', { method: 'POST', body: JSON.stringify(book) })
-    .then(res => { if(res.status === 201) setUpdatesAvailable(true) })
+  function submitBook(book: PartialBook) {
+    const validationErrors = validateClientside(book)
+    if(validationErrors.length == 0)
+    {
+      fetch('http://localhost:3000/api/books', { method: 'POST', body: JSON.stringify(book) })
+      .then(res => { if(res.status === 201) setUpdatesAvailable(true) })
+    }
+    return validationErrors
   }
   
   function deleteBook(id: number) {
@@ -67,6 +74,14 @@ export default function BooksPage() {
   function saveBook(id: number, book: NewBook) {
     fetch('http://localhost:3000/api/books/' + id, { method: 'PUT', body: JSON.stringify(book) })
     .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
+  }
+
+  function validateClientside(book: PartialBook) : FormError[]{
+      let errors = [];
+      if (!book.title) errors.push({scope: "title", message: "Missing title"})
+      if (!book.authorId || book.authorId < 1) errors.push({scope: "authorId", message: "invalid author"})
+      if (book.year && book.year < 1) errors.push({scope: "year", message: "invalid year"})
+      return errors
   }
 
   return (
@@ -90,7 +105,7 @@ export default function BooksPage() {
         <div data-testid="SubmitForm">
           <BookForm
             authors={authors}
-            onSubmit={(book: NewBook) => submitBook(book)}
+            onSubmit={(book: PartialBook) => submitBook(book)}
           />
         </div>
       </div>
