@@ -5,7 +5,6 @@ import { BookWithAuthor } from '@/model/book'
 import { Author } from '@/model/author'
 import { useState } from "react";
 import BookForm from "./BookForm";
-import { NewBook } from "@book-manager/database";
 
 type BookCardProps = {
     bookWithAuthor: BookWithAuthor
@@ -27,19 +26,19 @@ export default function BookCard({ bookWithAuthor, authors, onDelete, onSave }: 
             <BookForm
                 authors={authors}
                 initialValues={book}
-                onSubmit={(newBook) => {onSave(book.id, newBook)}}
+                onSubmit={(newBook) => {return onSave(book.id, newBook);}}
             />
         </Card>
     )
 
     return (
         <Card className="flex flex-row justify-between p-4">
-            <div className="py-1 px-2 grid grid-cols-2">
+            <div className="py-1 px-2 grid grid-cols-2 gap-8">
                 <div>
                     <Typography>{book.title}</Typography>
                     <Typography>by {author.name}</Typography>
                 </div>
-                <div>
+                <div className="w-full">
                     {book.isbn ? <Typography>ISBN: {book.isbn}</Typography> : ""}
                     {book.year ? <Typography>year: {book.year}</Typography> : ""}
                 </div>

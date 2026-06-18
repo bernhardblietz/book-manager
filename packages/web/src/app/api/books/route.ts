@@ -6,8 +6,8 @@ import z from "zod";
 export const BookPostSchema = z.object({
   title: z.string().min(1),
   authorId: z.int().positive(),
-  isbn: z.string().optional(),
-  year: z.int().optional(),
+  isbn: z.string().nullish(),
+  year: z.int().nullish(),
 })
 
 export const QuerySchema = z.object({

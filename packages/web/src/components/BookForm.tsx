@@ -37,6 +37,11 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
         setErrors(errors.filter((err) => err.scope !== scope))
     }
 
+    function validateYear(s : string){
+        if (s === "") return setYear(undefined)
+        if (s.match(/[1-9]/) && Number(s) > 0) setYear(Number(s))
+    }
+
     return (
         <>
             <form>
@@ -51,8 +56,8 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
                     error={errors.find((err) => err.scope === "authorId")?.message}
                     required
                 />
-                <Input label="ISBN" name="isbn" type="text" value={isbn ?? ""} onChange={(e) => {setIsbn(e.target.value);}} />
-                <Input label="Jahr" name="year" type="number" value={year ?? ""} onChange={(e) => {setYear(Number(e.target.value)); clearErrorFromScope("year")}} error={errors.find((err) => err.scope === "year")?.message} />
+                <Input label="ISBN" name="isbn" type="text" value={isbn ?? ""} onChange={(e) => setIsbn(e.target.value ? e.target.value : undefined)} />
+                <Input label="Jahr" name="year" type="text" value={year ?? ""} onChange={(e) => { validateYear(e.target.value); clearErrorFromScope("year") }} error={errors.find((err) => err.scope === "year")?.message} />
                 <Button variant="primary" type="button" onClick={submitBook}>{submitLabel}</Button>
             </form>
         </>

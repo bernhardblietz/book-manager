@@ -71,9 +71,14 @@ export default function BooksPage() {
     .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
   }
 
-  function saveBook(id: number, book: NewBook) {
-    fetch('http://localhost:3000/api/books/' + id, { method: 'PUT', body: JSON.stringify(book) })
-    .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
+  function saveBook(id: number, book: PartialBook) {
+    const validationErrors = validateClientside(book)
+    if(validationErrors.length == 0)
+    {
+      fetch('http://localhost:3000/api/books/' + id, { method: 'PUT', body: JSON.stringify(book, (k, v) => v === undefined ? null : v) })
+      .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
+    }
+    return validationErrors
   }
 
   function validateClientside(book: PartialBook) : FormError[]{
@@ -98,7 +103,7 @@ export default function BooksPage() {
           booksWithAuthors={booksWithAuthors}
           authors={authors}
           onDelete={(id: number) => deleteBook(id)}
-          onSave={(id: number, newBook: NewBook) => saveBook(id, newBook)}
+          onSave={(id: number, newBook: PartialBook) => saveBook(id, newBook)}
         /> ||
          <Typography className="w-full text-center">Keine Bücher gefunden.</Typography>
          }

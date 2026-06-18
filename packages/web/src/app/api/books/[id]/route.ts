@@ -6,8 +6,8 @@ import z from "zod";
 const BookPutSchema = z.object({
   title: z.string().min(1).optional(),
   authorId: z.int().positive().optional(),
-  isbn: z.string().optional(),
-  year: z.int().optional(),
+  isbn: z.string().nullish(),
+  year: z.int().nullish(),
 })
 
 export async function GET(_req: NextRequest, ctx: RouteContext<"/api/books/[id]">) {
