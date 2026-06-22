@@ -1,15 +1,11 @@
 "use client";
 
-import BookForm from "@/components/BookForm";
 import { Author } from "@/model/author"
 import { useEffect, useState } from "react";
 import BookList from "@/components/BookList";
-import { BookResponse, BookWithAuthor, PartialBook, Query } from "@/model/book";
-import { NewBook } from "@book-manager/database";
+import { BookResponse, BookWithAuthor, Query, Book } from "@/model/book";
 import QueryForm from "@/components/QueryForm";
 import Pagination from "@mui/material/Pagination";
-import { Typography } from "@mui/material";
-import { FormError } from "@/model/form";
 
 async function fetchBooks(query: Query): Promise<BookResponse> {
   const params = new URLSearchParams();
@@ -56,37 +52,38 @@ export default function BooksPage() {
   }, [updatesAvailable, query]);
   
 
-  function submitBook(book: PartialBook) {
-    const validationErrors = validateClientside(book)
-    if(validationErrors.length == 0)
-    {
-      fetch('http://localhost:3000/api/books', { method: 'POST', body: JSON.stringify(book) })
-      .then(res => { if(res.status === 201) setUpdatesAvailable(true) })
-    }
-    return validationErrors
+  async function submitBook(book: Book): Promise<boolean> {
+    return await fetch('http://localhost:3000/api/books', { method: 'POST', body: JSON.stringify(book) })
+    .then(res => {
+      if(res.status === 201) {
+        setUpdatesAvailable(true)
+        return true
+       }
+      return false
+    })
   }
   
-  function deleteBook(id: number) {
-    fetch('http://localhost:3000/api/books/' + id, { method: 'DELETE'})
-    .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
+  async function deleteBook(id: number): Promise<boolean> {
+    return await fetch('http://localhost:3000/api/books/' + id, { method: 'DELETE'})
+    .then(res => { 
+      if(res.status === 200) {
+        setUpdatesAvailable(true)
+        return true
+      }
+      return false
+    })
   }
 
-  function saveBook(id: number, book: PartialBook) {
-    const validationErrors = validateClientside(book)
-    if(validationErrors.length == 0)
-    {
-      fetch('http://localhost:3000/api/books/' + id, { method: 'PUT', body: JSON.stringify(book, (k, v) => v === undefined ? null : v) })
-      .then(res => { if(res.status === 200) setUpdatesAvailable(true) })
-    }
-    return validationErrors
-  }
-
-  function validateClientside(book: PartialBook) : FormError[]{
-      let errors = [];
-      if (!book.title) errors.push({scope: "title", message: "Missing title"})
-      if (!book.authorId || book.authorId < 1) errors.push({scope: "authorId", message: "invalid author"})
-      if (book.year && book.year < 1) errors.push({scope: "year", message: "invalid year"})
-      return errors
+  async function saveBook(book: Book): Promise<boolean> {
+    return await fetch('http://localhost:3000/api/books/' + book.id,
+      { method: 'PUT', body: JSON.stringify(book, (k, v) => v === undefined ? null : v) })
+    .then(res => {
+      if(res.status === 200) {
+        setUpdatesAvailable(true)
+        return true
+        }
+      return false
+    })
   }
 
   return (
@@ -98,25 +95,17 @@ export default function BooksPage() {
           onSubmit={(query) => setQuery(query)}
           authors={authors}
         />
-        {booksWithAuthors.length > 0 &&
         <BookList
           booksWithAuthors={booksWithAuthors}
           authors={authors}
           onDelete={(id: number) => deleteBook(id)}
-          onSave={(id: number, newBook: PartialBook) => saveBook(id, newBook)}
-        /> ||
-         <Typography className="w-full text-center">Keine Bücher gefunden.</Typography>
-         }
-        <div data-testid="SubmitForm">
-          <BookForm
-            authors={authors}
-            onSubmit={(book: PartialBook) => submitBook(book)}
-          />
-        </div>
+          onSave={(newBook: Book) => saveBook(newBook)}
+          onAdd={(newBook: Book) => submitBook(newBook)}
+        />
       </div>
       {booksWithAuthors.length > 0 &&
         <div className="flex flex-row justify-center">
-          <Pagination count={pages} onChange={(e, index) => setQuery({authorId: query.authorId, page: index, pageSize: query.pageSize, q: query.q})}/>
+          <Pagination count={pages} onChange={(e, index: number) => setQuery({authorId: query.authorId, page: index, pageSize: query.pageSize, q: query.q})}/>
         </div>
       }
     </div>

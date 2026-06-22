@@ -2,14 +2,15 @@ import React from "react"
 import Button from "./ui/Button"
 import Input from "./ui/Input"
 import Select from "./ui/Select"
-import { PartialBook } from "@/model/book"
+import { Book, PartialBook } from "@/model/book"
 import { Author } from '@/model/author'
 import { FormError } from "@/model/form"
+import { NewBook } from "@book-manager/database"
 
 type BookFormProps = {
     initialValues?: PartialBook
     authors: Author[]
-    onSubmit: (values: PartialBook) => FormError[]
+    onSubmit: Function
     submitLabel?: string
 }
 
@@ -21,10 +22,19 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
     const [year, setYear] = React.useState(initialValues?.year)
     const [errors, setErrors] = React.useState<FormError[]>([])
 
+    function validateClientside(book: PartialBook) : FormError[]{
+        let errors = [];
+        if (!book.title) errors.push({scope: "title", message: "Missing title"})
+        if (!book.authorId || book.authorId < 1) errors.push({scope: "authorId", message: "invalid author"})
+        if (book.year && book.year < 1) errors.push({scope: "year", message: "invalid year"})
+        return errors
+    }
+
     function submitBook(){
         const newBook: PartialBook = { id, title, authorId, isbn, year }
-        const errors = onSubmit(newBook)
+        const errors = validateClientside(newBook)
         if(errors.length == 0){
+            onSubmit({id, title: newBook.title!, authorId: newBook.authorId!, isbn: newBook.isbn, year: newBook.year} as NewBook)
             setTitle(initialValues?.title)
             setAuthorId(initialValues?.authorId)
             setIsbn(initialValues?.isbn)

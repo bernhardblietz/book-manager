@@ -1,7 +1,7 @@
 import { Card, IconButton, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { BookWithAuthor } from '@/model/book'
+import { Book, BookWithAuthor } from '@/model/book'
 import { Author } from '@/model/author'
 import { useState } from "react";
 import BookForm from "./BookForm";
@@ -18,6 +18,10 @@ export default function BookCard({ bookWithAuthor, authors, onDelete, onSave }: 
     const book = bookWithAuthor.books
     const [editState, setEditState] = useState<Boolean>(false)
 
+    function saveBook(book: Book){
+        setEditState(false)
+        return onSave(book)
+    }
 
     if(editState)
         
@@ -26,7 +30,7 @@ export default function BookCard({ bookWithAuthor, authors, onDelete, onSave }: 
             <BookForm
                 authors={authors}
                 initialValues={book}
-                onSubmit={(newBook) => {return onSave(book.id, newBook);}}
+                onSubmit={saveBook}
             />
         </Card>
     )
