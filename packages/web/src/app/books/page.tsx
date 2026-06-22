@@ -105,7 +105,7 @@ export default function BooksPage() {
       </div>
       {booksWithAuthors.length > 0 &&
         <div className="flex flex-row justify-center">
-          <Pagination count={pages} onChange={(e, index: number) => setQuery({authorId: query.authorId, page: index, pageSize: query.pageSize, q: query.q})}/>
+          <Pagination count={pages} page={query.page || 1} onChange={(e, index: number) => setQuery({...query, page: index})}/>
         </div>
       }
     </div>
