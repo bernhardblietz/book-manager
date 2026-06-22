@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner"
 import Link from "next/link";
 import "./globals.css";
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/api-doc">API Docs</Link>
           </nav>
           <main>{children}</main>
+          <Toaster/>
         </div>
       </body>
     </html>

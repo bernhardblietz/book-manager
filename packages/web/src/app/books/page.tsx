@@ -6,6 +6,7 @@ import BookList from "@/components/BookList";
 import { BookResponse, BookWithAuthor, Query, Book } from "@/model/book";
 import QueryForm from "@/components/QueryForm";
 import Pagination from "@mui/material/Pagination";
+import { toast } from "sonner";
 
 async function fetchBooks(query: Query): Promise<BookResponse> {
   const params = new URLSearchParams();
@@ -57,8 +58,10 @@ export default function BooksPage() {
     .then(res => {
       if(res.status === 201) {
         setUpdatesAvailable(true)
+        toast.success("Book added successfully.")
         return true
        }
+       toast.error("Unable to create Book. Revering.")
       return false
     })
   }
@@ -68,8 +71,10 @@ export default function BooksPage() {
     .then(res => { 
       if(res.status === 200) {
         setUpdatesAvailable(true)
+        toast.success("Book deleted successfully.")
         return true
       }
+      toast.error("Unable to delete Book. Reverting.")
       return false
     })
   }
@@ -80,8 +85,10 @@ export default function BooksPage() {
     .then(res => {
       if(res.status === 200) {
         setUpdatesAvailable(true)
+        toast.success("Changes saved successfully.")
         return true
         }
+      toast.error("Unable to save changes. Reverting.")
       return false
     })
   }
