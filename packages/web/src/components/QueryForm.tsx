@@ -1,6 +1,6 @@
 import { Query } from "@/model/book"
 import Input from "./ui/Input"
-import React from "react"
+import React, { useEffect } from "react"
 import { Author } from "@/model/author"
 import Select from "./ui/Select"
 import Button from "./ui/Button"
@@ -13,10 +13,17 @@ type QueryFormProps = {
 }
 
 export default function QueryForm({initialValues, onSubmit, authors}: QueryFormProps){
-    const [queryText, setQueryText] = React.useState(initialValues?.q || "")
-    const [authorId, setAuthorId] = React.useState(initialValues?.authorId || -1)
-    const [page, setPage] = React.useState(initialValues?.page || 1)
-    const [pageSize, setPageSize] = React.useState(initialValues?.pageSize || 20)
+    const [queryText, setQueryText] = React.useState<string>("")
+    const [authorId, setAuthorId] = React.useState<number>(-1)
+    const [page, setPage] = React.useState<number>(1)
+    const [pageSize, setPageSize] = React.useState<number>(20)
+
+    useEffect(() => {
+        setQueryText(initialValues?.q || "")
+        setAuthorId(initialValues?.authorId || -1)
+        setPage(initialValues?.page || 1)
+        setPageSize(initialValues?.pageSize || 20)
+    }, [initialValues])
 
     function submitQuery() {
         const newQuery : Query = {}
@@ -29,7 +36,7 @@ export default function QueryForm({initialValues, onSubmit, authors}: QueryFormP
 
     return (
         <>
-            <form>
+            <form className="min-w-3xs">
                 <Input label="Titel" name="queryText" value={queryText} onChange={(e) => setQueryText(e.target.value)} required />
                 <Input label="Seite" name="page" value={page} onChange={(e) => setPage(Number(e.target.value))} required />
                 <Input label="Bücher pro Seite" name="pageSize" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))} required />

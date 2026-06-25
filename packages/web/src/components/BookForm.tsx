@@ -1,8 +1,10 @@
+"use client"
+
 import React from "react"
 import Button from "./ui/Button"
 import Input from "./ui/Input"
 import Select from "./ui/Select"
-import { Book, PartialBook } from "@/model/book"
+import { PartialBook } from "@/model/book"
 import { Author } from '@/model/author'
 import { FormError } from "@/model/form"
 import { NewBook } from "@book-manager/database"
@@ -54,7 +56,7 @@ export default function BookForm({ initialValues, authors, onSubmit, submitLabel
 
     return (
         <>
-            <form>
+            <form className="min-w-3xs">
                 <Input label="Titel" name="title" value={title ?? ""} onChange={(e) => {setTitle(e.target.value); clearErrorFromScope("title")} } error={errors.find((err) => err.scope === "title")?.message} required />
                 <Select
                     label="Autor"

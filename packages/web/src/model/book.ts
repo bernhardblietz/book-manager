@@ -35,3 +35,9 @@ export type Query = {
   authorId?: number
   q?: string
 }
+
+export type ActionResult = {
+  success: boolean
+  data?: Book
+  error?: string
+}

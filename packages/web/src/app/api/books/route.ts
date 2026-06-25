@@ -1,5 +1,5 @@
 import { authors, books, db } from "@book-manager/database";
-import { eq, ilike, asc, SQL, and, count, getTableColumns } from "drizzle-orm";
+import { eq, ilike, asc, SQL, and, count } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
@@ -47,7 +47,9 @@ export async function GET(request: NextRequest) {
     .orderBy(asc(books.id))
     .limit(query.pageSize)
     .offset((query.pageNumber-1) * query.pageSize)
+
     const total = await db.select({ count: count() }).from(books).where(and(...filters))
+
     return NextResponse.json({ data, page: query.pageNumber, pageSize: query.pageSize, total: total[0].count });
   } catch {
     return NextResponse.json({ error: "An unexpected error occured while trying to fetch books" }, { status: 500 });

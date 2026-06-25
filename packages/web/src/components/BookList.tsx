@@ -1,35 +1,50 @@
-import { BookWithAuthor } from "@/model/book"
-import BookCard from "./BookCard"
+"use client"
+
+import { ActionResult, BookResponse, BookWithAuthor } from "@/model/book"
+import BookCard from "@/components/BookCard"
+import { Book } from "@/model/book"
+import Typography from "@mui/material/Typography"
 import { Author } from "@/model/author"
 import { startTransition, useOptimistic } from "react"
-import { Book } from "@/model/book"
+import { toast } from "sonner"
+import { submitBook } from "@/app/actions"
 import BookForm from "./BookForm"
-import { Typography } from "@mui/material"
 
 type BookListProps = {
-    booksWithAuthors: BookWithAuthor[]
+    bookResponse: BookResponse
     authors: Author[]
-    onDelete: (id: number) => Promise<boolean>
-    onSave: (newBook: Book) => Promise<boolean>
-    onAdd: (newBook: Book) => Promise<boolean>
+    onDelete: (id: number) => Promise<ActionResult>
+    onSave: (newBook: Book) => Promise<ActionResult>
+    onAdd: (newBook: Book) => Promise<ActionResult>
 }
 
-export default function BookList({ booksWithAuthors, authors, onDelete, onSave, onAdd }: BookListProps) {
-    const [optimisticBooks, setOptimisticBooks] = useOptimistic<BookWithAuthor[]>(booksWithAuthors)
+export default function BookList({ bookResponse, authors, onDelete, onSave, onAdd }: BookListProps) {
+    
+    const [optimisticBooks, setOptimisticBooks] = useOptimistic<BookWithAuthor[]>(bookResponse.data)
 
     function deleteBook (id: number) {
         startTransition(async () => {
             setOptimisticBooks(optimisticBooks.filter(item => item.books.id !== id))
-            const success = await onDelete(id);
-            if (!success) setOptimisticBooks(booksWithAuthors)
+            const result: ActionResult = await onDelete(id);
+            if (result.success){
+                toast.success("Book with ID: " + result.data?.id + " deleted successfully.")
+                return
+            }
+            toast.error(result.error + " Reverting.")
+            setOptimisticBooks(bookResponse.data)
         })
     }
 
     function saveBook (newBook: Book) {
         startTransition(async () => {
             setOptimisticBooks(optimisticBooks.map((item) => item.books.id === newBook.id ? {authors: item.authors, books: newBook} : item ))
-            const success = await onSave(newBook)
-            if(!success) setOptimisticBooks(booksWithAuthors)
+            const result: ActionResult = await onSave(newBook)
+            if (result.success){
+                toast.success("Book with ID: " + result.data?.id + " saved successfully.")
+                return
+            }
+            toast.error(result.error + " Reverting.")
+            setOptimisticBooks(bookResponse.data)
         })
     }
 
@@ -39,15 +54,20 @@ export default function BookList({ booksWithAuthors, authors, onDelete, onSave, 
             const dummyBook = {...newBook, id: -1}
             const dummyBookWithAuthor: BookWithAuthor = {books: dummyBook, authors: author}
             setOptimisticBooks([...optimisticBooks, dummyBookWithAuthor])
-            const success = await onAdd(newBook)
-            if(!success) setOptimisticBooks(booksWithAuthors)
+            const result: ActionResult = await onAdd(newBook)
+            if (result.success){
+                toast.success("Book with ID: " + result.data?.id + " added successfully.")
+                return
+            }
+            toast.error(result.error + " Reverting.")
+            setOptimisticBooks(bookResponse.data)
         })
     }
 
-    return(
+    return (
         <div className="flex flex-row gap-8 w-full">
             <div className="w-full flex flex-col gap-2">
-                {optimisticBooks.map((bookWithAuthor) => (
+                {bookResponse.data.map((bookWithAuthor) => (
                         <div key={bookWithAuthor.books.id}>
                             <BookCard
                                 bookWithAuthor={bookWithAuthor}
@@ -57,11 +77,11 @@ export default function BookList({ booksWithAuthors, authors, onDelete, onSave, 
                             />
                         </div>
                     ))}
-                {optimisticBooks.length === 0 && <Typography className="w-full text-center">Keine Bücher gefunden.</Typography>}
+                {bookResponse.data.length === 0 && <Typography className="w-full text-center">Keine Bücher gefunden.</Typography>}
             </div>
-            <BookForm data-testid="SubmitForm"
+            <BookForm
                 authors={authors}
-                onSubmit={(book: Book) => addBook(book)}
+                onSubmit={addBook}
             />
         </div>
     )
