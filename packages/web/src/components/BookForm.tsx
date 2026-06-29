@@ -8,6 +8,7 @@ import type { FormError } from "@/model/form";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Select from "./ui/Select";
+import z from "zod";
 
 type BookFormProps = {
   initialValues?: PartialBook;
@@ -29,26 +30,38 @@ export default function BookForm({
   const [year, setYear] = React.useState(initialValues?.year);
   const [errors, setErrors] = React.useState<FormError[]>([]);
 
-  function validateClientside(book: PartialBook): FormError[] {
-    const errors = [];
-    if (!book.title) errors.push({ scope: "title", message: "Missing title" });
-    if (!book.authorId || book.authorId < 1)
-      errors.push({ scope: "authorId", message: "invalid author" });
-    if (book.year && book.year < 1) errors.push({ scope: "year", message: "invalid year" });
-    return errors;
-  }
+
+  const BookFormSchema = z.object({
+    title: z.string().min(1),
+    authorId: z.int().min(1).positive(),
+    isbn: z.string().optional(),
+    year: z.int().min(1).optional(),
+  });
 
   function submitBook() {
-    const newBook: PartialBook = { id, title, authorId, isbn, year };
-    const errors = validateClientside(newBook);
-    if (errors.length === 0) {
-      onSubmit(newBook as Book);
+    const result = z.safeParse(BookFormSchema, { title, authorId, isbn, year });
+    if (result.success) {
+      onSubmit({ title, authorId, isbn, year } as Book);
       setTitle(initialValues?.title);
       setAuthorId(initialValues?.authorId);
       setIsbn(initialValues?.isbn);
       setYear(initialValues?.year);
+      setErrors([])
+    } else {
+      const tree = z.treeifyError(result.error);
+      const formErrors = Object.entries(tree.properties ?? {}).reduce<FormError[]>(
+        (acc, [scope, property]) => {
+          acc.push({
+            scope,
+            message: property.errors.join("\n"),
+          });
+          return acc;
+        },
+        [],
+      );
+
+      setErrors(formErrors);
     }
-    setErrors(errors);
   }
 
   function clearErrorFromScope(scope: string) {
