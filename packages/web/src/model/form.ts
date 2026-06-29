@@ -1,4 +1,4 @@
 export type FormError = {
-    scope: string
-    message: string
-}
+  scope: string;
+  message: string;
+};

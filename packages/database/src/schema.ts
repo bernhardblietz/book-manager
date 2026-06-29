@@ -8,13 +8,15 @@ export const authors = pgTable("authors", {
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  authorId: integer().references(() => authors.id).notNull(),
+  authorId: integer()
+    .references(() => authors.id)
+    .notNull(),
   isbn: text("isbn").unique(),
-  year: integer("year")
+  year: integer("year"),
 });
 
 export type Author = typeof authors.$inferSelect;
 export type NewAuthor = typeof authors.$inferInsert;
 
 export type Book = typeof books.$inferSelect;
-export type NewBook = typeof books.$inferInsert
+export type NewBook = typeof books.$inferInsert;

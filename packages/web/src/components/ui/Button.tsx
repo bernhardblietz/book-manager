@@ -1,4 +1,4 @@
-import { Button as MuiButton } from "@mui/material"
+import { Button as MuiButton } from "@mui/material";
 
 type ButtonProps = {
   variant: "primary" | "danger";
@@ -8,10 +8,16 @@ type ButtonProps = {
   children: React.ReactNode;
 };
 
-export default function Button({ variant, type = "button", onClick, disabled, children }: ButtonProps) {
+export default function Button({
+  variant,
+  type = "button",
+  onClick,
+  disabled,
+  children,
+}: ButtonProps) {
   return (
-    <MuiButton type={type} onClick={onClick} disabled={disabled} className={variant} >
-        {children}
+    <MuiButton type={type} onClick={onClick} disabled={disabled} className={variant}>
+      {children}
     </MuiButton>
-  )
+  );
 }

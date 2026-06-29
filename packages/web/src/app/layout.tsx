@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Toaster } from "sonner"
 import Link from "next/link";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/api-doc">API Docs</Link>
           </nav>
           <main>{children}</main>
-          <Toaster/>
+          <Toaster />
         </div>
       </body>
     </html>
