@@ -48,12 +48,7 @@ describe("BookList", () => {
   });
 
   it("valides Form-Submit ruft server action", async () => {
-    const serverActionSpy = vi.fn(
-      () =>
-        new Promise<ActionResult>(() => {
-          true;
-        }),
-    );
+    const serverActionSpy = vi.fn(() => Promise.resolve({ success: true }));
     render(
       <BookList
         bookResponse={emptyResponse}

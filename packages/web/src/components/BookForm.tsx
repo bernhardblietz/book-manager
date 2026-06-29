@@ -2,16 +2,16 @@
 
 import type { Book } from "@book-manager/database";
 import React from "react";
+import z from "zod";
 import type { Author } from "@/model/author";
-import type { ActionResult, PartialBook } from "@/model/book";
+import type { ActionResult } from "@/model/book";
 import type { FormError } from "@/model/form";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Select from "./ui/Select";
-import z from "zod";
 
 type BookFormProps = {
-  initialValues?: PartialBook;
+  initialValues?: Book;
   authors: Author[];
   onSubmit: (newBook: Book) => Promise<ActionResult>;
   submitLabel?: string;
@@ -23,13 +23,11 @@ export default function BookForm({
   onSubmit,
   submitLabel = "Buch speichern",
 }: BookFormProps) {
-  const [id, _setId] = React.useState(initialValues?.id);
   const [title, setTitle] = React.useState(initialValues?.title);
   const [authorId, setAuthorId] = React.useState(initialValues?.authorId);
   const [isbn, setIsbn] = React.useState(initialValues?.isbn);
   const [year, setYear] = React.useState(initialValues?.year);
   const [errors, setErrors] = React.useState<FormError[]>([]);
-
 
   const BookFormSchema = z.object({
     title: z.string().min(1),
@@ -46,7 +44,7 @@ export default function BookForm({
       setAuthorId(initialValues?.authorId);
       setIsbn(initialValues?.isbn);
       setYear(initialValues?.year);
-      setErrors([])
+      setErrors([]);
     } else {
       const tree = z.treeifyError(result.error);
       const formErrors = Object.entries(tree.properties ?? {}).reduce<FormError[]>(
