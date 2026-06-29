@@ -6,7 +6,6 @@ import BookList from "@/components/BookList";
 import { BookResponse, ActionResult } from "@/model/book";
 import { Author } from "@/model/author";
 import { userEvent } from 'vitest/browser'
-import { success } from "zod";
 
 describe("BookList", () => {
 
@@ -24,15 +23,8 @@ describe("BookList", () => {
     render(<BookList bookResponse={emptyResponse} authors={authors} onDelete={dummyAction} onSave={dummyAction} onAdd={dummyAction} />);
     expect(await screen.findByText("Keine Bücher gefunden.")).toBeInTheDocument();
   });
-});
-
-
-describe("BookList", () => {
-  const authors: Author[] = [{id: 1, name: "A"}]
-  const emptyResponse: BookResponse = { data: [], page: 0, pageSize: 0, total: 0 }
 
   it("valides Form-Submit ruft server action", async () => {
-    function dummyAction(){ return new Promise<ActionResult>(() => {})}
     const serverActionSpy = vi.fn(() => new Promise<ActionResult>(() => {success: true}))
     render(<BookList bookResponse={emptyResponse} authors={authors} onDelete={dummyAction} onSave={dummyAction} onAdd={serverActionSpy} />)
     const titleInputs = screen.getAllByLabelText('Titel', {selector: 'input'})
@@ -42,5 +34,6 @@ describe("BookList", () => {
     const submitButton = await screen.findAllByText("Buch speichern")
     await userEvent.click(submitButton[0])
     expect(serverActionSpy).toHaveBeenCalledOnce()
-  })
-})
+  });
+
+});
