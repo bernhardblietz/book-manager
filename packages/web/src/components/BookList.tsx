@@ -95,7 +95,7 @@ export default function BookList({
   return (
     <div className="flex flex-row gap-8 w-full">
       <div className="w-full flex flex-col gap-2">
-        {bookResponse.data.map((bookWithAuthor) => (
+        {optimisticBooks.map((bookWithAuthor) => (
           <div key={bookWithAuthor.books.id}>
             <BookCard
               bookWithAuthor={bookWithAuthor}
@@ -105,7 +105,7 @@ export default function BookList({
             />
           </div>
         ))}
-        {bookResponse.data.length === 0 && (
+        {optimisticBooks.length === 0 && (
           <Typography className="w-full text-center">Keine Bücher gefunden.</Typography>
         )}
       </div>

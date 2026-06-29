@@ -36,12 +36,14 @@ export default function UiBundle({ bookResponse, initialQuery, authors, children
         <QueryForm initialValues={query} onSubmit={setQuery} authors={authors} />
         <div className="flex flex-col gap-8 items-center w-full">
           {children}
-          <Pagination
+        </div>
+      </div>
+      <div className="flex flex-col items-center w-full">
+        <Pagination
             count={pagecount}
             page={bookResponse.page}
             onChange={(_e, index) => setQuery({ ...query, page: index })}
-          />
-        </div>
+        />
       </div>
     </div>
   );

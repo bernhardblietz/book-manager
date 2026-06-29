@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest, ctx: RouteContext<"/api/books/[i
     return NextResponse.json({ updated: res });
   } catch {
     return NextResponse.json(
-      { error: `An unexpected error occured while trying to fetch a book with id ${id}` },
+      { error: `An unexpected error occured while trying to save a book with id ${id}` },
       { status: 500 },
     );
   }
